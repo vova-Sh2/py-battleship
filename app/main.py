@@ -10,6 +10,8 @@ class Ship:
                  start: tuple,
                  end: tuple,
                  is_drowned: bool = False) -> None:
+        self.start = start
+        self.end = end
         self.is_drowned = is_drowned
         self.decks = self.get_deck(start, end)
 
@@ -118,15 +120,18 @@ class Battleship:
             raise ValueError("Should be 10 ships")
         for ship in ships:
             for deck in ship.decks:
-                r, c = deck.row, deck.column
+                row, column = deck.row, deck.column
 
-                for dr in [-1, 0, 1]:
-                    for dc in [-1, 0, 1]:
-                        if dr == 0 and dc == 0:
+                for d_row in [-1, 0, 1]:
+                    for d_column in [-1, 0, 1]:
+                        if d_row == 0 and d_column == 0:
                             continue
-                        nr, nc = r + dr, c + dc
-                        if (nr, nc) in occupied:
-                            raise ValueError(f"Ship {ship.start, ship.end} and {self.field[(nr,nc)].start, self.field[(nr, nc)].end}nearby")
+                        new_row, new_column = row + d_row, column + d_column
+                        if (new_row, new_column) in occupied:
+                            conflict = self.field[(new_row, new_column)]
+                            raise ValueError(f"Ship"
+                                             f" {ship.start, ship.end} and"
+                                             f" {conflict.start, conflict.end}"
+                                             f" nearby")
             for deck in ship.decks:
                 occupied.add((deck.row, deck.column))
-
