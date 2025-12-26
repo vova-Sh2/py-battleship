@@ -10,8 +10,6 @@ class Ship:
                  start: tuple,
                  end: tuple,
                  is_drowned: bool = False) -> None:
-        self.start = start
-        self.end = end
         self.is_drowned = is_drowned
         self.decks = self.get_deck(start, end)
 
@@ -57,6 +55,8 @@ class Battleship:
                 self.field[(i.row, i.column)] = shi
         for row, column in self.field:
             self.arena[row][column] = self.SHIP
+        self.print_field()
+        self._validate_field()
 
     def fire(self, location: tuple) -> str:
         row, column = location
@@ -77,6 +77,56 @@ class Battleship:
             row, column = dec
             if self.field[dec].is_drowned:
                 self.arena[row][column] = self.SUNK
-
+        print("_" * 29)
         for row in range(10):
             print("  ".join(self.arena[row]))
+
+    def _validate_field(self) -> None:
+        ships = {ship for ship in self.field.values()}
+        occupied = set()
+        four_decks = 0
+        three_decks = 0
+        two_decks = 0
+        one_deck = 0
+        number_ships = 0
+        for deck in ships:
+            number_decks = len(deck.decks)
+            if number_decks == 4:
+                four_decks += 1
+                number_ships += 1
+            elif number_decks == 3:
+                three_decks += 1
+                number_ships += 1
+            elif number_decks == 2:
+                two_decks += 1
+                number_ships += 1
+            elif number_decks == 1:
+                one_deck += 1
+                number_ships += 1
+            else:
+                raise ValueError(f"Incorrect ship length"
+                                 f" {deck.start, deck.end}")
+        if four_decks != 1:
+            raise ValueError("Should be 1 four_decker")
+        if three_decks != 2:
+            raise ValueError("Should be 2 three_decker")
+        if two_decks != 3:
+            raise ValueError("Should be 2 two_decker")
+        if one_deck != 4:
+            raise ValueError("Should be 1 one_decker")
+        if number_ships != 10:
+            raise ValueError("Should be 10 ships")
+        for ship in ships:
+            for deck in ship.decks:
+                r, c = deck.row, deck.column
+
+                for dr in [-1, 0, 1]:
+                    for dc in [-1, 0, 1]:
+                        if dr == 0 and dc == 0:
+                            continue
+                        nr, nc = r + dr, c + dc
+                        if (nr, nc) in occupied:
+                            raise ValueError(f"Ship {ship.start, ship.end} and {self.field[(nr,nc)].start, self.field[(nr, nc)].end}nearby")
+            for deck in ship.decks:
+                occupied.add((deck.row, deck.column))
+
