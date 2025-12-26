@@ -113,9 +113,9 @@ class Battleship:
         if three_decks != 2:
             raise ValueError("Should be 2 three_decker")
         if two_decks != 3:
-            raise ValueError("Should be 2 two_decker")
+            raise ValueError("Should be 3 two_decker")
         if one_deck != 4:
-            raise ValueError("Should be 1 one_decker")
+            raise ValueError("Should be 4 one_decker")
         if number_ships != 10:
             raise ValueError("Should be 10 ships")
         for ship in ships:
